@@ -1,0 +1,431 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="description" content="Kitsune Security — Audits cybersécurité, SOC, formations. Basés à Bordeaux. Protégez vos systèmes, vos données et votre réputation." />
+  <meta name="theme-color" content="#0b0b12" />
+
+  <title>Kitsune Security — Audits • SOC • Formations</title>
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Kitsune Security — Audits • SOC • Formations" />
+  <meta property="og:description" content="Entreprise de cybersécurité à Bordeaux : audits, SOC, formations. Approche pragmatique, livrables actionnables." />
+  <meta property="og:type" content="website" />
+
+  <link rel="preload" href="./styles.css" as="style" />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+
+<body>
+  <!-- Background ornaments (no mouse-based movement) -->
+  <div class="bg" aria-hidden="true">
+    <div class="bg__grid"></div>
+    <div class="bg__glow bg__glow--a"></div>
+    <div class="bg__glow bg__glow--b"></div>
+  </div>
+
+  <a class="skip" href="#main">Aller au contenu</a>
+
+  <header class="header" id="top">
+    <nav class="nav container" aria-label="Navigation principale">
+      <a class="brand" href="#top">
+        <img class="brand__logo" src="./assets/logo.png" alt="Logo Kitsune Security" />
+        <span class="brand__name">Kitsune Security</span>
+      </a>
+
+      <button class="nav__toggle" type="button" aria-expanded="false" aria-controls="navMenu">
+        <span class="nav__toggleIcon" aria-hidden="true"></span>
+        <span class="sr-only">Ouvrir le menu</span>
+      </button>
+
+      <div class="nav__menu" id="navMenu">
+        <a class="nav__link nav__link--soc" href="http://10.111.0.82:8081/" target="_blank" rel="noopener noreferrer">Mon SOC</a>
+        <a class="nav__link" href="#services">Services</a>
+        <a class="nav__link" href="#offres">Nos offres</a>
+        <a class="nav__link" href="#equipe">Équipe</a>
+        <a class="nav__link" href="#faq">FAQ</a>
+        <a class="nav__cta" href="#contact">Contact</a>
+      </div>
+    </nav>
+  </header>
+
+  <main id="main">
+    <!-- HERO -->
+    <section class="hero container">
+      <div class="hero__left">
+        <p class="pill">
+          <span class="dot"></span>
+          Cybersécurité — Bordeaux
+        </p>
+
+        <h1 class="hero__title">
+          Sécurisez vos systèmes <span class="grad">avant</span> qu’un incident ne le fasse à votre place.
+        </h1>
+
+        <p class="hero__lead">
+          Kitsune Security accompagne PME & organisations avec une approche pragmatique :
+          <strong>audits</strong>, <strong>SOC</strong> et <strong>formations</strong>. Des livrables clairs, actionnables, orientés réduction de risque.
+        </p>
+
+        <div class="hero__actions">
+          <a class="btn btn--primary" href="#offres">Voir nos offres d’audit</a>
+          <a class="btn btn--ghost" href="#contact">Demander un devis</a>
+        </div>
+
+        <div class="hero__badges" aria-label="Référentiels et périmètres">
+          <span class="badge">Bonnes pratiques ISO 27001</span>
+          <span class="badge">Approche NIST</span>
+          <span class="badge">RGPD & hygiène cyber</span>
+        </div>
+      </div>
+
+      <div class="hero__right" aria-hidden="true">
+        <div class="card card--hero">
+          <div class="card__hdr">
+            <span class="chip">KITSUNE · CONSOLE</span>
+            <span class="status"><span class="status__led"></span> Monitoring</span>
+          </div>
+          <pre class="terminal"><code>
+$ kitsune scan --scope=external --report=exec
+✓ Surface d’exposition cartographiée
+✓ Vulnérabilités triées par criticité
+✓ Priorisation des correctifs (impact/effort)
+✓ Re-test & validation
+          </code></pre>
+
+          <div class="kpis">
+            <div class="kpi">
+              <div class="kpi__n">3</div>
+              <div class="kpi__t">Offres d’audit</div>
+            </div>
+            <div class="kpi">
+              <div class="kpi__n">SOC</div>
+              <div class="kpi__t">Option 24/7</div>
+            </div>
+            <div class="kpi">
+              <div class="kpi__n">5</div>
+              <div class="kpi__t">Experts</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TRUST STRIP -->
+    <section class="strip container" aria-label="Valeur">
+      <div class="strip__item">
+        <h3>Livrables actionnables</h3>
+        <p>Rapport clair, preuves, recommandations prioritaires et plan de remédiation.</p>
+      </div>
+      <div class="strip__item">
+        <h3>Approche réaliste</h3>
+        <p>On vise l’impact : réduction de risque, continuité d’activité, conformité.</p>
+      </div>
+      <div class="strip__item">
+        <h3>Accompagnement</h3>
+        <p>Re-tests, ateliers, coaching équipes IT & métiers, montée en compétence.</p>
+      </div>
+    </section>
+
+    <!-- SERVICES -->
+    <section class="section container" id="services">
+      <div class="section__head">
+        <h2>Nos services</h2>
+        <p>Audit, SOC, formation : un continuum pour comprendre, corriger et surveiller.</p>
+      </div>
+
+      <div class="grid grid--3">
+        <article class="card card--service">
+          <div class="icon" aria-hidden="true">🦊</div>
+          <h3>Audits & diagnostics</h3>
+          <ul class="list">
+            <li>Audit de surface d’exposition</li>
+            <li>Vulnérabilités & configuration</li>
+            <li>Tests ciblés (selon périmètre)</li>
+            <li>Plan de remédiation priorisé</li>
+          </ul>
+          <a class="link" href="#offres">Voir les offres d’audit →</a>
+        </article>
+
+        <article class="card card--service">
+          <div class="icon" aria-hidden="true">🛡️</div>
+          <h3>SOC (Security Operations)</h3>
+          <ul class="list">
+            <li>Supervision & alerting</li>
+            <li>Détection, triage, réponse</li>
+            <li>Playbooks & amélioration continue</li>
+            <li>Rapports & comités de suivi</li>
+          </ul>
+          <a class="link" href="#contact">Parler SOC →</a>
+        </article>
+
+        <article class="card card--service">
+          <div class="icon" aria-hidden="true">🎓</div>
+          <h3>Formations</h3>
+          <ul class="list">
+            <li>Hygiène cyber & sensibilisation</li>
+            <li>Phishing, mots de passe, MFA</li>
+            <li>Bonnes pratiques IT & cloud</li>
+            <li>Ateliers “table-top” incident</li>
+          </ul>
+          <a class="link" href="#contact">Demander un programme →</a>
+        </article>
+      </div>
+    </section>
+
+    <!-- OFFRES -->
+    <section class="section container" id="offres">
+      <div class="section__head">
+        <h2>Nos offres d’audit</h2>
+        <p>3 niveaux pour s’adapter à votre maturité et votre urgence.</p>
+      </div>
+
+      <div class="pricing">
+        <article class="price card">
+          <div class="price__top">
+            <h3>Essential</h3>
+            <p class="price__tag">Pour démarrer vite et propre</p>
+          </div>
+          <div class="price__mid">
+            <p class="price__value">À partir de <strong>1 490€</strong></p>
+            <p class="price__note">Périmètre standard · délai rapide</p>
+          </div>
+          <ul class="list list--ticks">
+            <li>Cartographie exposition externe</li>
+            <li>Scan vulnérabilités + tri criticité</li>
+            <li>Rapport exécutif + technique</li>
+            <li>Top 10 actions “impact/effort”</li>
+            <li>1 atelier de restitution</li>
+          </ul>
+          <button class="btn btn--primary js-quote" data-offer="Essential" type="button">Demander un devis</button>
+        </article>
+
+        <article class="price card card--featured">
+          <div class="ribbon" aria-hidden="true">Recommandé</div>
+          <div class="price__top">
+            <h3>Serenity</h3>
+            <p class="price__tag">Audit + accompagnement remédiation</p>
+          </div>
+          <div class="price__mid">
+            <p class="price__value">À partir de <strong>2 990€</strong></p>
+            <p class="price__note">Idéal pour PME · suivi inclus</p>
+          </div>
+          <ul class="list list--ticks">
+            <li>Tout “Essential”</li>
+            <li>Analyse configuration & durcissement</li>
+            <li>Vérifications ciblées (selon contexte)</li>
+            <li>Plan de remédiation priorisé + jalons</li>
+            <li>Re-test de validation</li>
+          </ul>
+          <button class="btn btn--primary js-quote" data-offer="Serenity" type="button">Demander un devis</button>
+        </article>
+
+        <article class="price card">
+          <div class="price__top">
+            <h3>Premium</h3>
+            <p class="price__tag">Approche complète & approfondie</p>
+          </div>
+          <div class="price__mid">
+            <p class="price__value">À partir de <strong>5 990€</strong></p>
+            <p class="price__note">Multi-périmètre · accompagnement renforcé</p>
+          </div>
+          <ul class="list list--ticks">
+            <li>Tout “Serenity”</li>
+            <li>Ateliers menace & scénarios incident</li>
+            <li>Recommandations architecture / process</li>
+            <li>Roadmap sécurité 3–6 mois</li>
+            <li>Option onboarding SOC</li>
+          </ul>
+          <button class="btn btn--primary js-quote" data-offer="Premium" type="button">Demander un devis</button>
+        </article>
+      </div>
+
+      <p class="fineprint">
+        Les tarifs sont indicatifs (périmètre, nombre d’actifs, complexité). Un cadrage rapide permet d’ajuster précisément l’offre.
+      </p>
+    </section>
+
+    <!-- EQUIPE -->
+    <section class="section container" id="equipe">
+      <div class="section__head">
+        <h2>Notre équipe</h2>
+        <p>Nous sommes 5, basés à Bordeaux. Une petite équipe = réactivité, clarté, suivi.</p>
+      </div>
+
+      <div class="grid grid--5">
+        <article class="card card--person">
+          <div class="avatar" aria-hidden="true">KS</div>
+          <h3>Direction</h3>
+          <p>Vision, pilotage, relation client.</p>
+        </article>
+        <article class="card card--person">
+          <div class="avatar" aria-hidden="true">AU</div>
+          <h3>Audit</h3>
+          <p>Diagnostic, priorisation, re-test.</p>
+        </article>
+        <article class="card card--person">
+          <div class="avatar" aria-hidden="true">SO</div>
+          <h3>SOC</h3>
+          <p>Supervision, alerting, playbooks.</p>
+        </article>
+        <article class="card card--person">
+          <div class="avatar" aria-hidden="true">TR</div>
+          <h3>Formation</h3>
+          <p>Sensibilisation & ateliers pratiques.</p>
+        </article>
+        <article class="card card--person">
+          <div class="avatar" aria-hidden="true">OP</div>
+          <h3>Ops</h3>
+          <p>Qualité, process, amélioration continue.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="section container" id="faq">
+      <div class="section__head">
+        <h2>FAQ</h2>
+        <p>Les questions les plus fréquentes avant de démarrer.</p>
+      </div>
+
+      <div class="faq">
+        <details class="card">
+          <summary>En combien de temps peut-on démarrer ?</summary>
+          <p>Après un cadrage (30–45 min), nous lançons la prestation selon votre urgence et le périmètre. Le cadrage fixe objectifs, limites et livrables.</p>
+        </details>
+
+        <details class="card">
+          <summary>Faites-vous du “technique” et du “métier” ?</summary>
+          <p>Oui : nous livrons un rapport exécutif (risques/impact) et un rapport technique (preuves & recommandations), pour que direction et IT parlent le même langage.</p>
+        </details>
+
+        <details class="card">
+          <summary>Le SOC est-il obligatoire ?</summary>
+          <p>Non. Beaucoup d’organisations commencent par un audit + remédiation. Le SOC devient pertinent quand on veut surveiller en continu et réduire le temps de détection/réponse.</p>
+        </details>
+      </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section class="section container" id="contact">
+      <div class="section__head">
+        <h2>Contact</h2>
+        <p>Expliquez votre besoin : audit, SOC ou formation. On revient vers vous rapidement.</p>
+      </div>
+
+      <div class="contact">
+        <div class="card contact__info">
+          <h3>Kitsune Security</h3>
+          <p><strong>Bordeaux</strong> · interventions France entière</p>
+
+          <div class="contact__chips">
+            <span class="badge">Audit</span>
+            <span class="badge">SOC</span>
+            <span class="badge">Formations</span>
+          </div>
+
+          <div class="contact__lines">
+            <div class="line">
+              <span class="line__k">Email</span>
+              <span class="line__v">contact@kitsune-security.fr</span>
+            </div>
+            <div class="line">
+              <span class="line__k">Téléphone</span>
+              <span class="line__v">+33 6 00 00 00 00</span>
+            </div>
+            <div class="line">
+              <span class="line__k">Adresse</span>
+              <span class="line__v">Bordeaux, France</span>
+            </div>
+          </div>
+
+          <p class="fineprint">
+            (Remplace les coordonnées ci-dessus par les tiennes.)
+          </p>
+        </div>
+
+        <form class="card form" id="contactForm" novalidate>
+          <div class="form__row">
+            <label>
+              Nom
+              <input name="name" autocomplete="name" required placeholder="Votre nom" />
+            </label>
+            <label>
+              Entreprise
+              <input name="company" autocomplete="organization" placeholder="Votre entreprise" />
+            </label>
+          </div>
+
+          <div class="form__row">
+            <label>
+              Email
+              <input name="email" type="email" autocomplete="email" required placeholder="vous@entreprise.fr" />
+            </label>
+            <label>
+              Téléphone
+              <input name="phone" autocomplete="tel" placeholder="+33 ..." />
+            </label>
+          </div>
+
+          <label>
+            Sujet
+            <select name="subject" id="subjectSelect">
+              <option value="Audit - Essential">Audit — Essential</option>
+              <option value="Audit - Serenity" selected>Audit — Serenity</option>
+              <option value="Audit - Premium">Audit — Premium</option>
+              <option value="SOC">SOC</option>
+              <option value="Formation">Formation</option>
+              <option value="Autre">Autre</option>
+            </select>
+          </label>
+
+          <label>
+            Message
+            <textarea name="message" required rows="5" placeholder="Contexte, périmètre, urgence, contraintes…"></textarea>
+          </label>
+
+          <label class="check">
+            <input type="checkbox" name="consent" required />
+            <span>J’accepte d’être recontacté(e) concernant cette demande.</span>
+          </label>
+
+          <div class="form__actions">
+            <button class="btn btn--primary" type="submit">Envoyer</button>
+            <p class="form__hint" id="formHint" role="status" aria-live="polite"></p>
+          </div>
+
+          <p class="fineprint">
+            Ce formulaire est prêt côté front. Pour l’envoi réel : connecte-le à Formspree / Make / n8n / backend.
+          </p>
+        </form>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+      <div class="container footer__inner">
+        <div class="footer__brand">
+          <img src="./assets/logo.png" alt="" class="footer__logo" />
+          <div>
+            <strong>Kitsune Security</strong>
+            <div class="muted">Audits · SOC · Formations — Bordeaux</div>
+          </div>
+        </div>
+
+        <div class="footer__links">
+          <a href="#services">Services</a>
+          <a href="#offres">Nos offres</a>
+          <a href="#contact">Contact</a>
+        </div>
+
+        <div class="footer__copy muted">
+          © <span id="year"></span> Kitsune Security. Tous droits réservés. Projet Etudiant
+        </div>
+      </div>
+    </footer>
+  </main>
+
+  <script src="./script.js"></script>
+</body>
+</html>
