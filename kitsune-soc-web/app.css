@@ -1,0 +1,173 @@
+:root{
+  --bgTop: #ffffff;
+  --bgMid: #ffffff;
+  --bgLow: #d7d7d7;
+  --bgBottom: #2a2a2a;
+
+  --pillLeft: #7a22d6;
+  --pillRight:#f0186d;
+
+  --text: #ffffff;
+  --footer: rgba(255,255,255,0.75);
+  --footerShadow: rgba(0,0,0,0.35);
+}
+
+*{ box-sizing: border-box; }
+
+html, body{
+  height: 100%;
+}
+
+body{
+  margin: 0;
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, "Noto Sans", "Helvetica Neue", sans-serif;
+  color: #111;
+
+  /* Fond comme ta capture */
+  background: linear-gradient(
+    180deg,
+    var(--bgTop) 0%,
+    var(--bgMid) 52%,
+    var(--bgLow) 72%,
+    #6b6b6b 86%,
+    var(--bgBottom) 100%
+  );
+  overflow-x: hidden;
+}
+
+.page{
+  min-height: 100vh;
+  position: relative;
+}
+
+/* Watermark central */
+.page::before{
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("./assets/logo.png"); /* <= ici */
+  background-repeat: no-repeat;
+  background-position: 50% 50%;
+  background-size: 520px auto;
+  opacity: 0.10;
+  pointer-events: none;
+  filter: saturate(0.8);
+}
+
+/* Logo top-left */
+.brand{
+  position: absolute;
+  top: 18px;
+  left: 22px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 2;
+}
+.brand img{
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+}
+
+/* Zone centrale */
+.center{
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 16px 90px;
+  position: relative;
+  z-index: 1;
+}
+
+.stack{
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  align-items: center;
+}
+
+/* Boutons pills */
+.pill{
+  width: min(520px, 86vw);
+  height: 62px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  color: var(--text);
+  font-weight: 700;
+  font-size: 20px;
+  letter-spacing: 0.2px;
+
+  background: linear-gradient(90deg, var(--pillLeft), var(--pillRight));
+  box-shadow:
+    0 18px 38px rgba(0,0,0,0.20),
+    0 8px 16px rgba(0,0,0,0.14);
+  transition: transform 120ms ease, filter 120ms ease;
+  user-select: none;
+}
+
+.pill:hover{
+  transform: translateY(-1px);
+  filter: brightness(1.03);
+}
+
+.pill:active{
+  transform: translateY(0px) scale(0.995);
+}
+
+/* Footer bas centré */
+.footer{
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 14px;
+  display: flex;
+  justify-content: center;
+  z-index: 2;
+  padding: 0 12px;
+}
+
+.footer .text{
+  font-size: 15px;
+  color: var(--footer);
+  text-shadow: 0 2px 10px var(--footerShadow);
+  text-align: center;
+}
+
+/* Dashboard clock card */
+.clock{
+  position: absolute;
+  top: 18px;
+  right: 22px;
+  z-index: 2;
+
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: rgba(255,255,255,0.55);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 14px 30px rgba(0,0,0,0.12);
+  border: 1px solid rgba(255,255,255,0.55);
+}
+
+.clock .time{
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.clock .date{
+  font-size: 13px;
+  opacity: 0.75;
+  margin-top: 4px;
+}
+
+/* Respect accessibilité */
+@media (prefers-reduced-motion: reduce){
+  .pill{ transition: none; }
+  .pill:hover{ transform: none; }
+}
