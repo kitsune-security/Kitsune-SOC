@@ -1,0 +1,876 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kitsune Autodiag — Autodiagnostic cybersécurité</title>
+  <meta name="description" content="Kitsune Autodiag — autodiagnostic cybersécurité simple (≤ 20 questions), dynamique, scoring et recommandations." />
+  <style>
+    :root{
+      --bg:#06060a;
+      --fg:#ffffff;
+      --muted:rgba(255,255,255,.72);
+      --muted2:rgba(255,255,255,.55);
+      --line:rgba(255,255,255,.12);
+      --glass:rgba(255,255,255,.06);
+      --shadow:0 18px 70px -30px rgba(0,0,0,.78);
+      --radius:26px;
+      --focus:rgba(255,255,255,.78);
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      color:var(--fg);
+      background:var(--bg);
+      overflow-x:hidden;
+    }
+
+    /* Apple TV-ish background (soft orbs + grid) */
+    .bg{position:fixed; inset:0; pointer-events:none; overflow:hidden; z-index:0;}
+    .orb{position:absolute; border-radius:999px; filter: blur(70px); opacity:.40; transform: translate3d(0,0,0); animation: float 12s ease-in-out infinite;}
+    .orb.pink{width:420px;height:420px;left:-150px;top:-140px;background:rgba(236,72,153,.58);animation-duration:10s;}
+    .orb.sky{width:560px;height:560px;right:-190px;top:10%;background:rgba(56,189,248,.50);animation-duration:13s;}
+    .orb.green{width:560px;height:560px;left:10%;bottom:-280px;background:rgba(52,211,153,.40);animation-duration:15s;}
+    @keyframes float{0%{transform:translate3d(0,0,0)}50%{transform:translate3d(40px,22px,0)}100%{transform:translate3d(0,0,0)}}
+    .fade{position:absolute; inset:0; background: linear-gradient(to bottom, rgba(0,0,0,.06), rgba(0,0,0,.55), rgba(0,0,0,.92));}
+    .grid{position:absolute; inset:0; background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,.06) 1px, transparent 0); background-size: 24px 24px; opacity:.26;}
+
+    /* Layout */
+    .wrap{position:relative; z-index:2; max-width: 980px; margin:0 auto; padding: 20px 16px 66px;}
+    .topbar{display:flex; align-items:center; justify-content:space-between; gap:14px; padding-top:4px;}
+    .brand{display:flex; align-items:center; gap:12px; min-width:0;}
+    .logo{width:42px;height:42px; border-radius:16px; border:1px solid var(--line); background: rgba(255,255,255,.10); display:grid; place-items:center; box-shadow: 0 10px 40px -24px rgba(255,255,255,.20);}    
+    .brand .t1{font-size:12px; color:rgba(255,255,255,.55); line-height:1.1}
+    .brand .t2{font-size:16px; font-weight:650; line-height:1.15}
+    .actions{display:flex; align-items:center; gap:10px; flex-wrap:wrap; justify-content:flex-end;}
+
+    .card{border-radius: var(--radius); border:1px solid var(--line); background: var(--glass); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); box-shadow: var(--shadow);}    
+    .pad{padding: 22px;}
+    @media (min-width: 860px){ .pad{padding: 26px;} }
+
+    .h1{font-size: 30px; font-weight:780; letter-spacing: -0.02em; margin: 10px 0 0}
+    .h2{font-size: 22px; font-weight:740; margin: 0}
+    .p{color: var(--muted); line-height:1.55; margin: 10px 0 0;}
+
+    .pill{display:inline-flex; align-items:center; gap:8px; padding: 7px 12px; border-radius: 999px; border:1px solid var(--line); background: rgba(255,255,255,.10); font-size: 12px; color: rgba(255,255,255,.92);}    
+    .pill.good{border-color: rgba(52,211,153,.22); background: rgba(52,211,153,.13); color: rgba(167,243,208,.95)}
+    .pill.warn{border-color: rgba(251,191,36,.24); background: rgba(251,191,36,.14); color: rgba(253,230,138,.95)}
+    .pill.bad{border-color: rgba(248,113,113,.24); background: rgba(248,113,113,.14); color: rgba(254,202,202,.95)}
+    .pill.info{border-color: rgba(125,211,252,.24); background: rgba(125,211,252,.14); color: rgba(186,230,253,.95)}
+
+    .btn{height: 44px; padding: 0 16px; border-radius: 18px; border:1px solid transparent; background: rgba(255,255,255,.95); color: #000; font-weight: 650; font-size: 13px; display:inline-flex; align-items:center; gap:10px; cursor:pointer; user-select:none; transition: transform .06s ease, background .15s ease, border-color .15s ease; box-shadow: 0 10px 30px -14px rgba(255,255,255,.30);}    
+    .btn:hover{background: rgba(255,255,255,.90)}
+    .btn:active{transform: scale(.99)}
+    .btn.ghost{background: rgba(255,255,255,.10); color: rgba(255,255,255,.95); border-color: var(--line); box-shadow: none;}
+    .btn.subtle{background: rgba(255,255,255,.06); color: rgba(255,255,255,.95); border-color: var(--line); box-shadow: none;}
+    .btn:focus{outline:none}
+    .btn:focus-visible{box-shadow: 0 0 0 2px var(--focus), 0 0 0 6px rgba(0,0,0,.65)}
+    .btn[disabled]{opacity:.55; cursor:not-allowed}
+    .mini{height: 38px; padding: 0 12px; border-radius: 16px; font-size: 12px;}
+
+    .hr{height:1px; background: var(--line); margin: 18px 0;}
+
+    label{font-size:13px; color: rgba(255,255,255,.86)}
+    input, select, textarea{width:100%; border-radius: 18px; border:1px solid var(--line); background: rgba(255,255,255,.05); color: rgba(255,255,255,.95); padding: 10px 14px; outline:none; font-size: 13px;}
+    input, select{height: 44px; padding: 0 14px;}
+    textarea{min-height: 90px; resize: vertical;}
+    input::placeholder{color: rgba(255,255,255,.45)}
+    input:focus, select:focus, textarea:focus{box-shadow: 0 0 0 2px var(--focus), 0 0 0 6px rgba(0,0,0,.65)}
+
+    .row{display:grid; gap:10px;}
+    .row2{display:grid; gap:12px; grid-template-columns: 1fr 1fr}
+    @media (max-width: 860px){.row2{grid-template-columns:1fr}}
+
+    .progressWrap{display:flex; gap:14px; align-items:center; justify-content:space-between; flex-wrap:wrap}
+    .bar{height: 8px; border-radius:999px; background: rgba(255,255,255,.10); overflow:hidden;}
+    .bar > div{height:100%; background: rgba(255,255,255,.80); width:0%; transition: width .18s ease; border-radius:999px}
+
+    /* Options Oui/Non/NSP */
+    .opts{display:grid; gap:10px;}
+    .optBtn{width:100%; border-radius: 20px; border:1px solid var(--line); background: rgba(255,255,255,.05); padding: 14px; text-align:left; cursor:pointer; transition: background .14s ease, border-color .14s ease; display:flex; justify-content:space-between; align-items:flex-start; gap:12px;}
+    .optBtn:hover{background: rgba(255,255,255,.09)}
+    .optBtn.sel{background: rgba(255,255,255,.10); border-color: rgba(255,255,255,.30)}
+    .optBtn:focus{outline:none}
+    .optBtn:focus-visible{box-shadow: 0 0 0 2px var(--focus), 0 0 0 6px rgba(0,0,0,.65)}
+    .optTitle{font-size: 13px; font-weight: 700;}
+    .optSub{font-size: 12px; color: rgba(255,255,255,.55); margin-top:6px}
+    .dot{width:18px;height:18px;border-radius:999px; border:1px solid rgba(255,255,255,.25); background: transparent; margin-top:3px; flex: 0 0 auto; transition: border-color .14s ease, background .14s ease;}
+    .optBtn.sel .dot{background: rgba(255,255,255,.90); border-color: rgba(255,255,255,.65)}
+
+    .note{border-radius: 20px; border:1px solid var(--line); background: rgba(255,255,255,.05); padding: 14px; color: var(--muted); font-size: 13px; line-height:1.45;}
+
+    .item{border-radius: 20px; border:1px solid var(--line); background: rgba(0,0,0,.20); padding: 14px;}
+    .item .t{font-size: 13px; font-weight: 740;}
+    .item .s{font-size: 12px; color: rgba(255,255,255,.55); margin-top:4px}
+    .item .d{font-size: 13px; color: var(--muted); margin-top:10px; line-height:1.45}
+
+    .small{font-size:12px; color: rgba(255,255,255,.52)}
+
+    .fadeIn{animation: fadeIn .22s ease}
+    @keyframes fadeIn{from{opacity:0; transform: translateY(10px)} to{opacity:1; transform: translateY(0)}}
+
+    details{border-radius: 20px; border:1px solid var(--line); background: rgba(255,255,255,.05); padding: 12px 14px;}
+    summary{cursor:pointer; color: rgba(255,255,255,.88); font-size: 13px; font-weight: 650; list-style:none;}
+    summary::-webkit-details-marker{display:none;}
+    details p{margin:10px 0 0; color: var(--muted); font-size: 13px; line-height:1.5;}
+
+    .kpi{border-radius: 22px; border:1px solid var(--line); background: rgba(255,255,255,.05); padding: 16px;}
+    .kpi .big{font-size: 34px; font-weight: 850; letter-spacing: -0.02em;}
+
+    .levels{display:grid; gap:12px; grid-template-columns: 1fr 1fr 1fr}
+    @media (max-width: 860px){.levels{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="bg" aria-hidden="true">
+    <div class="orb pink"></div>
+    <div class="orb sky"></div>
+    <div class="orb green"></div>
+    <div class="grid"></div>
+    <div class="fade"></div>
+  </div>
+
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">
+        <div class="logo" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z" stroke="rgba(255,255,255,.92)" stroke-width="1.7"/>
+          </svg>
+        </div>
+        <div style="min-width:0">
+          <div class="t1">Kitsune Autodiag</div>
+          <div class="t2">Autodiagnostic cybersécurité (simple)</div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button id="btnReset" class="btn subtle mini" type="button" style="display:none">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M3 12a9 9 0 0 1 15.36-6.36L21 3v6h-6l2.5-2.5A7 7 0 1 0 19 12" stroke="rgba(255,255,255,.92)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Réinitialiser
+        </button>
+        <button id="btnExport" class="btn ghost mini" type="button" style="display:none">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M12 3v12" stroke="rgba(255,255,255,.92)" stroke-width="1.7" stroke-linecap="round"/>
+            <path d="M8 11l4 4 4-4" stroke="rgba(255,255,255,.92)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M4 21h16" stroke="rgba(255,255,255,.92)" stroke-width="1.7" stroke-linecap="round"/>
+          </svg>
+          Export JSON
+        </button>
+      </div>
+    </div>
+
+    <div id="app" style="margin-top:18px;"></div>
+  </div>
+
+<script>
+(() => {
+  const STORAGE_KEY = "kitsune_autodiag_html_simple_v1";
+
+  const state = {
+    step: 0,
+    idx: 0,
+    startedAt: null,
+    ctx: {
+      orgName: "",
+      orgSize: "10-49",
+      remote: "yes",
+      cloud: "med",
+      outsourcing: "yes"
+    },
+    answers: {},
+    comments: {},
+  };
+
+  const QUESTIONS = [
+    {
+      id: "q1_assets",
+      title: "Inventaire",
+      prompt: "Avez-vous un inventaire à jour de vos matériels, logiciels et services numériques ?",
+      explain: "Sans inventaire, vous ne pouvez pas protéger ce que vous ne connaissez pas (postes, serveurs, SaaS, comptes admin, sauvegardes).",
+      reco: "Créer un inventaire (propriétaire, criticité, exposition) et le revoir au moins trimestriellement.",
+    },
+    {
+      id: "q2_passwords",
+      title: "Mots de passe",
+      prompt: "Utilisez-vous des mots de passe uniques et robustes (idéalement via un gestionnaire) ?",
+      explain: "La réutilisation de mots de passe multiplie l'impact d'une fuite. Le gestionnaire réduit la friction et améliore la sécurité.",
+      reco: "Déployer un gestionnaire de mots de passe et imposer des secrets uniques sur les services critiques.",
+    },
+    {
+      id: "q3_mfa",
+      title: "MFA",
+      prompt: "Le MFA est-il activé sur la messagerie et les services critiques (SaaS, VPN, admin) ?",
+      explain: "Le MFA réduit fortement les risques de compromission par phishing ou fuite de mots de passe.",
+      reco: "Activer MFA partout, en priorité sur email et consoles d'administration (préférer app/FIDO2 plutôt que SMS).",
+    },
+    {
+      id: "q4_updates",
+      title: "Mises à jour",
+      prompt: "Appliquez-vous rapidement les mises à jour de sécurité (OS, navigateur, applis) ?",
+      explain: "Une grande partie des intrusions exploitent des vulnérabilités connues mais non corrigées.",
+      reco: "Mettre un patch management avec un délai cible (ex: critiques ≤ 7 jours) et un suivi mensuel.",
+    },
+    {
+      id: "q5_backup",
+      title: "Sauvegardes",
+      prompt: "Avez-vous des sauvegardes régulières et déconnectées ou immuables (anti-ransomware) ?",
+      explain: "Sans sauvegardes fiables, un ransomware peut bloquer l'activité et entraîner des pertes de données.",
+      reco: "Mettre une stratégie 3-2-1 avec au moins une copie hors ligne ou immuable, et documenter RPO/RTO.",
+    },
+    {
+      id: "q6_restore",
+      title: "Restauration",
+      prompt: "Testez-vous réellement la restauration de vos sauvegardes (au moins trimestriellement) ?",
+      explain: "Une sauvegarde non testée n'est pas une sauvegarde. Les tests valident les délais et la complétude.",
+      reco: "Planifier des tests de restauration trimestriels (fichiers + systèmes) et corriger les écarts.",
+    },
+    {
+      id: "q7_endpoint",
+      title: "Antivirus / EDR",
+      prompt: "Vos postes et serveurs sont-ils protégés par une solution à jour (AV/EDR) ?",
+      explain: "Les malwares et ransomwares ciblent en priorité les endpoints. Une protection gérée réduit le risque.",
+      reco: "Déployer une protection endpoint gérée (idéalement EDR) et vérifier la couverture sur 100% du parc.",
+    },
+    {
+      id: "q8_admin",
+      title: "Comptes admin",
+      prompt: "Les comptes administrateurs sont-ils nominatifs et séparés des comptes utilisateurs ?",
+      explain: "Les comptes privilégiés sont très recherchés. La séparation limite l'impact d'une compromission.",
+      reco: "Supprimer les comptes partagés, séparer user/admin et activer MFA fort + journaux sur actions sensibles.",
+    },
+    {
+      id: "q9_sharing",
+      title: "Partage de fichiers",
+      prompt: "Le partage externe (Drive/SharePoint/OneDrive) est-il contrôlé (pas de liens publics) ?",
+      explain: "Les fuites de données viennent souvent de partages trop ouverts (liens publics, invités non suivis).",
+      reco: "Désactiver les liens publics, limiter le partage externe et faire une revue périodique des partages.",
+      showIf: (ctx) => ctx.cloud !== 'low',
+    },
+    {
+      id: "q10_awareness",
+      title: "Sensibilisation",
+      prompt: "Avez-vous sensibilisé les équipes aux risques (phishing, pièces jointes, partage cloud) sur les 12 derniers mois ?",
+      explain: "L'humain est une cible. Une sensibilisation courte mais régulière réduit les incidents.",
+      reco: "Mettre un programme annuel + rappels trimestriels et un canal de signalement email suspect.",
+    },
+    {
+      id: "q11_ir",
+      title: "Incident",
+      prompt: "Avez-vous un plan simple de réponse à incident (contacts, étapes, décisions) ?",
+      explain: "En crise, le temps compte. Un runbook évite l'improvisation et accélère la reprise.",
+      reco: "Rédiger un runbook (ransomware, mail compromis, fuite) + contacts d'urgence hors SI.",
+    },
+    {
+      id: "q12_logs",
+      title: "Alertes",
+      prompt: "Avez-vous des alertes sur les événements critiques (connexion suspecte, création d'admin, désactivation MFA) ?",
+      explain: "Détecter tôt limite l'impact. Les alertes SaaS et EDR sont un bon point de départ.",
+      reco: "Activer l'audit SaaS et créer des alertes essentielles (admin ajouté, MFA off, partage public, etc.).",
+      showIf: (ctx) => ctx.cloud !== 'low',
+    },
+    {
+      id: "q13_remote",
+      title: "Télétravail",
+      prompt: "Les accès à distance sont-ils sécurisés (VPN ou ZTNA + MFA) et les postes gérés (chiffrement, mises à jour) ?",
+      explain: "Le télétravail augmente la surface d'attaque : identité, device et réseau doivent être maîtrisés.",
+      reco: "Mettre VPN+MFA (ou ZTNA), exiger un poste conforme et éviter toute exposition directe (ex: RDP).",
+      showIf: (ctx) => ctx.remote === 'yes',
+    },
+    {
+      id: "q14_vendor",
+      title: "Prestataires",
+      prompt: "Vos prestataires ont-ils des accès encadrés (MFA, durée limitée) et des clauses sécurité ou incident ?",
+      explain: "Le risque tiers est fréquent (accès persistants, comptes partagés, manque de clauses).",
+      reco: "Rendre les accès prestataires temporaires et nominatifs, MFA obligatoire, et formaliser la notification incident.",
+      showIf: (ctx) => ctx.outsourcing === 'yes',
+    },
+  ];
+
+  function loadState(){
+    try{
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if(!raw) return;
+      const data = JSON.parse(raw);
+      if(!data || typeof data !== 'object') return;
+      if(typeof data.step === 'number') state.step = data.step;
+      if(typeof data.idx === 'number') state.idx = data.idx;
+      if(data.startedAt) state.startedAt = data.startedAt;
+      if(data.ctx) state.ctx = { ...state.ctx, ...data.ctx };
+      if(data.answers) state.answers = { ...data.answers };
+      if(data.comments) state.comments = { ...data.comments };
+    } catch(e) {}
+  }
+
+  function saveState(){
+    try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e) {}
+  }
+
+  const $ = (sel, root=document) => root.querySelector(sel);
+  const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
+
+  function clamp(n,a,b){ return Math.max(a, Math.min(b,n)); }
+  function pct(n){ return String(Math.round(n)) + '%'; }
+  function nowISO(){ return new Date().toISOString(); }
+
+  function formatDateTimeFR(d){
+    const pad = (x) => String(x).padStart(2,'0');
+    return pad(d.getDate()) + '/' + pad(d.getMonth()+1) + '/' + d.getFullYear() + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+  }
+
+  function escapeHtml(s){
+    return String(s ?? '')
+      .replace(/&/g,'&amp;')
+      .replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;')
+      .replace(/"/g,'&quot;')
+      .replace(/'/g,'&#039;');
+  }
+  function escapeAttr(s){ return escapeHtml(s).split('\n').join(' '); }
+
+  function visibleQuestions(){
+    return QUESTIONS.filter(q => (typeof q.showIf === 'function') ? !!q.showIf(state.ctx) : true);
+  }
+
+  function scoreOf(value){
+    if(value === 'yes') return 2;
+    if(value === 'nsp') return 1;
+    if(value === 'no') return 0;
+    return null;
+  }
+
+  function computeScore(qs){
+    let num = 0;
+    let den = 0;
+    const misses = [];
+
+    for(const q of qs){
+      const v = state.answers[q.id];
+      const s = scoreOf(v);
+      if(s == null) continue;
+      num += s;
+      den += 2;
+      if(v !== 'yes'){
+        misses.push({
+          id: q.id,
+          title: q.title,
+          prompt: q.prompt,
+          value: v,
+          reco: q.reco || null,
+          comment: (state.comments[q.id] || '').trim() || null,
+        });
+      }
+    }
+
+    const overall = den ? (num/den)*100 : 0;
+
+    let level = { label: 'Maturité cyber insuffisante', tone: 'bad' };
+    if(overall >= 75) level = { label: 'Bonne maturité cyber', tone: 'good' };
+    else if(overall >= 45) level = { label: 'Maturité cyber moyenne', tone: 'warn' };
+
+    const recos = misses.filter(m => m.reco).slice(0, 6);
+
+    return { overall, level, misses, recos };
+  }
+
+  function toneClass(t){ return t === 'good' ? 'good' : t === 'warn' ? 'warn' : t === 'bad' ? 'bad' : 'info'; }
+
+  function downloadJSON(filename, payload){
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  function sanitizeName(s){
+    const str = String(s || '').trim();
+    let out = '';
+    let lastWasUnderscore = false;
+    for (let i = 0; i < str.length; i++){
+      const ch = str[i];
+      const code = str.charCodeAt(i);
+      const isAZ = (code >= 65 && code <= 90) || (code >= 97 && code <= 122);
+      const is09 = (code >= 48 && code <= 57);
+      const isSpace = (ch === ' ' || ch === '	' || ch === '' || ch === '');
+
+if (isAZ || is09 || ch === '_' || ch === '-'){
+        out += ch;
+        lastWasUnderscore = false;
+      } else if (isSpace){
+        if (!lastWasUnderscore && out.length > 0){
+          out += '_';
+          lastWasUnderscore = true;
+        }
+      } else {
+        // ignore other chars
+      }
+    }
+    while(out.endsWith('_')) out = out.slice(0, -1);
+    return out;
+  }
+
+  const app = document.getElementById('app');
+  const btnReset = document.getElementById('btnReset');
+  const btnExport = document.getElementById('btnExport');
+
+  function render(){
+    const qs = visibleQuestions();
+    const answered = qs.filter(q => !!state.answers[q.id]).length;
+    const progress = qs.length ? (answered/qs.length)*100 : 0;
+
+    btnReset.style.display = state.step > 0 ? 'inline-flex' : 'none';
+    btnExport.style.display = state.step === 3 ? 'inline-flex' : 'none';
+
+    if(state.step === 0) renderWelcome(qs);
+    else if(state.step === 1) renderContext(qs);
+    else if(state.step === 2) renderQuestion(qs, progress);
+    else renderResult(qs);
+
+    saveState();
+  }
+
+  function renderWelcome(qs){
+    app.innerHTML = 
+      '<div class="card pad fadeIn">' +
+        '<div style="display:flex; justify-content:space-between; gap:12px; align-items:flex-start; flex-wrap:wrap;">' +
+          '<div style="min-width:0">' +
+            '<div style="display:flex; gap:10px; flex-wrap:wrap;">' +
+              '<span class="pill info">✅ Oui / ❌ Non / 🤷 NSP</span>' +
+              '<span class="pill">⏱️ ~5 minutes</span>' +
+              '<span class="pill">≤ ' + qs.length + ' questions</span>' +
+            '</div>' +
+            '<div class="h1">Kitsune Autodiag</div>' +
+            '<p class="p" style="max-width: 720px;">Un autodiagnostic volontairement <b>simple</b> : 3 réponses possibles (Oui / Non / NSP) + option pour ajouter un commentaire. À la fin, vous obtenez un score indicatif et des actions prioritaires.</p>' +
+          '</div>' +
+          '<div class="kpi" style="min-width: 240px;">' +
+            '<div class="small">Questions (selon contexte)</div>' +
+            '<div class="big">' + qs.length + '</div>' +
+            '<div class="small">Télétravail / prestataires peuvent ajouter des questions.</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="hr"></div>' +
+        '<div class="row2">' +
+          '<div class="note">⚠️ Diagnostic indicatif (non-audit). Pour un diagnostic preuve, il faut vérifier politiques, captures et journaux.</div>' +
+          '<div class="note">🔒 Cette version HTML ne transmet rien sur Internet : stockage local navigateur uniquement.</div>' +
+        '</div>' +
+        '<div style="margin-top: 16px; display:flex; gap:12px; flex-wrap:wrap; align-items:center;">' +
+          '<button class="btn" id="btnStart" type="button">Commencer →</button>' +
+          '<div class="small">Conseil : si vous hésitez, choisissez NSP (à traiter comme un point à clarifier).</div>' +
+        '</div>' +
+      '</div>';
+
+    $('#btnStart').onclick = () => {
+      if(!state.startedAt) state.startedAt = nowISO();
+      state.step = 1;
+      render();
+    };
+  }
+
+  function option(value, label){
+    return '<option value="' + escapeAttr(value) + '">' + escapeHtml(label) + '</option>';
+  }
+
+  function renderContext(qs){
+    app.innerHTML = 
+      '<div class="card pad fadeIn">' +
+        '<div style="display:flex; align-items:flex-start; gap:12px;">' +
+          '<div class="logo" style="width:40px;height:40px;border-radius:16px;"><span style="font-size:16px;">ℹ️</span></div>' +
+          '<div style="min-width:0">' +
+            '<div class="h2">Contexte</div>' +
+            '<div class="p" style="margin-top:6px; font-size:13px">Pour adapter les questions (télétravail / cloud / prestataires)</div>' +
+          '</div>' +
+        '</div>' +
+
+        '<div style="margin-top: 16px;" class="row2">' +
+          '<div class="row">' +
+            '<label>Organisation</label>' +
+            '<input id="orgName" placeholder="Ex: ACME SAS" value="' + escapeAttr(state.ctx.orgName) + '" />' +
+          '</div>' +
+          '<div class="row">' +
+            '<label>Effectif</label>' +
+            '<select id="orgSize">' +
+              option('1-9','1–9') +
+              option('10-49','10–49') +
+              option('50-249','50–249') +
+              option('250+','250+') +
+            '</select>' +
+          '</div>' +
+        '</div>' +
+
+        '<div style="margin-top: 12px;" class="row2">' +
+          '<div class="row">' +
+            '<label>Télétravail (régulier)</label>' +
+            '<select id="remote">' +
+              option('yes','Oui') +
+              option('no','Non') +
+            '</select>' +
+          '</div>' +
+          '<div class="row">' +
+            '<label>Dépendance SaaS/Cloud</label>' +
+            '<select id="cloud">' +
+              option('low','Faible') +
+              option('med','Moyenne') +
+              option('high','Élevée') +
+            '</select>' +
+          '</div>' +
+        '</div>' +
+
+        '<div style="margin-top: 12px;" class="row2">' +
+          '<div class="row">' +
+            '<label>Prestataire informatique (gestion partielle/totale)</label>' +
+            '<select id="outsourcing">' +
+              option('yes','Oui') +
+              option('no','Non') +
+            '</select>' +
+          '</div>' +
+          '<div class="note">' +
+            '<div style="font-weight:700;">Aperçu</div>' +
+            '<div style="margin-top:8px; color:rgba(255,255,255,.72); font-size:13px">Questions estimées : <b>' + qs.length + '</b> (max 14).</div>' +
+          '</div>' +
+        '</div>' +
+
+        '<div style="margin-top: 16px; display:flex; gap:10px; flex-wrap:wrap;">' +
+          '<button class="btn" id="btnGo" type="button">Démarrer le questionnaire →</button>' +
+          (Object.keys(state.answers||{}).length ? '<button class="btn ghost" id="btnResume" type="button">Reprendre →</button>' : '') +
+        '</div>' +
+      '</div>';
+
+    $('#orgSize').value = state.ctx.orgSize;
+    $('#remote').value = state.ctx.remote;
+    $('#cloud').value = state.ctx.cloud;
+    $('#outsourcing').value = state.ctx.outsourcing;
+
+    $('#orgName').addEventListener('input', (e) => { state.ctx.orgName = e.target.value; saveState(); });
+    $('#orgSize').addEventListener('change', (e) => { state.ctx.orgSize = e.target.value; saveState(); });
+    $('#remote').addEventListener('change', (e) => { state.ctx.remote = e.target.value; state.idx = 0; render(); });
+    $('#cloud').addEventListener('change', (e) => { state.ctx.cloud = e.target.value; state.idx = 0; render(); });
+    $('#outsourcing').addEventListener('change', (e) => { state.ctx.outsourcing = e.target.value; state.idx = 0; render(); });
+
+    $('#btnGo').onclick = () => {
+      if(!state.startedAt) state.startedAt = nowISO();
+      state.step = 2;
+      state.idx = 0;
+      render();
+    };
+
+    const btnResume = $('#btnResume');
+    if(btnResume){
+      btnResume.onclick = () => {
+        if(!state.startedAt) state.startedAt = nowISO();
+        state.step = 2;
+        render();
+      };
+    }
+  }
+
+  function renderYesNoNsp(host, q, current){
+    const options = [
+      { value: 'yes', label: 'Oui', sub: 'Pratique en place', score: 2 },
+      { value: 'no',  label: 'Non', sub: 'À mettre en place', score: 0 },
+      { value: 'nsp', label: 'NSP', sub: 'Je ne sais pas', score: 1 },
+    ];
+
+    host.innerHTML = options.map(o => {
+      const sel = current === o.value;
+      return (
+        '<button class="optBtn ' + (sel ? 'sel' : '') + '" data-qid="' + escapeAttr(q.id) + '" data-val="' + escapeAttr(o.value) + '" type="button">' +
+          '<div style="min-width:0">' +
+            '<div class="optTitle">' + o.label + '</div>' +
+            '<div class="optSub">' + o.sub + ' • score ' + o.score + '/2</div>' +
+          '</div>' +
+          '<div class="dot" aria-hidden="true"></div>' +
+        '</button>'
+      );
+    }).join('');
+
+    $$('.optBtn', host).forEach(btn => {
+      btn.addEventListener('click', () => {
+        const qid = btn.getAttribute('data-qid');
+        const val = btn.getAttribute('data-val');
+        state.answers[qid] = val;
+        // UX: avance automatiquement
+        if(state.step === 2){
+          const qs = visibleQuestions();
+          const cur = state.idx;
+          if(cur < qs.length - 1) state.idx = cur + 1;
+          else state.step = 3;
+        }
+        render();
+      });
+    });
+  }
+
+  function renderQuestion(qs, progress){
+    const q = qs[state.idx] || null;
+    if(!q){ state.step = 3; render(); return; }
+
+    const v = state.answers[q.id] || '';
+    const hasComment = !!(state.comments[q.id] && state.comments[q.id].trim());
+
+    app.innerHTML = 
+      '<div class="card pad fadeIn">' +
+        '<div class="progressWrap">' +
+          '<div>' +
+            '<div class="small">Question</div>' +
+            '<div style="margin-top:4px; font-size: 18px; font-weight: 760;">' + (state.idx+1) + ' / ' + qs.length + '</div>' +
+          '</div>' +
+          '<div style="width:min(340px, 100%);">' +
+            '<div class="bar"><div id="pFill"></div></div>' +
+            '<div class="small" style="margin-top:8px;">' + pct(progress) + '</div>' +
+          '</div>' +
+        '</div>' +
+
+        '<div class="hr"></div>' +
+
+        '<div>' +
+          '<div style="display:flex; gap:10px; flex-wrap:wrap;">' +
+            '<span class="pill">' + escapeHtml(q.title) + '</span>' +
+            (v ? '<span class="pill info">Réponse enregistrée</span>' : '<span class="pill">Répondez pour continuer</span>') +
+          '</div>' +
+          '<div style="margin-top: 12px; font-size: 20px; font-weight: 820;">' + escapeHtml(q.prompt) + '</div>' +
+        '</div>' +
+
+        '<div style="margin-top: 14px;" class="opts" id="opts"></div>' +
+
+        '<div style="margin-top: 14px;" class="row">' +
+          '<label style="display:flex; align-items:center; gap:10px; cursor:pointer; user-select:none;">' +
+            '<input type="checkbox" id="cbComment" style="width:18px; height:18px;" ' + (hasComment ? 'checked' : '') + ' />' +
+            'Ajouter un commentaire (optionnel)' +
+          '</label>' +
+          '<div id="commentBox" style="display:' + (hasComment ? 'block' : 'none') + ';">' +
+            '<textarea id="txtComment" placeholder="Précisez si besoin (outil, fréquence, périmètre...)" >' + escapeHtml(state.comments[q.id] || '') + '</textarea>' +
+          '</div>' +
+        '</div>' +
+        '<details style="margin-top: 12px;" ' + (state.idx === 0 ? 'open' : '') + '>' +
+          '<summary>Voir l’explication</summary>' +
+          '<p>' + escapeHtml(q.explain || '') + '</p>' +
+        '</details>' +
+
+        '<div style="margin-top: 16px; display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap;">' +
+          '<button class="btn ghost" id="btnPrev" type="button">← Précédent</button>' +
+          '<button class="btn" id="btnNext" type="button" ' + (v ? '' : 'disabled') + '>' + (state.idx < qs.length-1 ? 'Suivant' : 'Terminer') + ' →</button>' +
+        '</div>' +
+
+        '<div class="small" style="margin-top: 12px;">NSP = vous ne savez pas : à traiter comme un point à clarifier (priorité).</div>' +
+      '</div>';
+
+    $('#pFill').style.width = String(progress) + '%';
+
+    renderYesNoNsp($('#opts'), q, v);
+
+    $('#cbComment').addEventListener('change', (e) => {
+      $('#commentBox').style.display = e.target.checked ? 'block' : 'none';
+      if(!e.target.checked){
+        state.comments[q.id] = '';
+        saveState();
+      }
+    });
+
+    const txt = $('#txtComment');
+    if(txt){
+      txt.addEventListener('input', (e) => {
+        state.comments[q.id] = e.target.value;
+        saveState();
+      });
+    }
+
+    $('#btnPrev').onclick = () => {
+      if(state.idx > 0) state.idx -= 1;
+      else state.step = 1;
+      render();
+    };
+
+    $('#btnNext').onclick = () => {
+      if(!state.answers[q.id]) return;
+      if(state.idx < qs.length - 1) state.idx += 1;
+      else state.step = 3;
+      render();
+    };
+  }
+
+  function renderResult(qs){
+    const name = state.ctx.orgName || "Organisation";
+    const gen = formatDateTimeFR(new Date());
+    const res = computeScore(qs);
+
+    app.innerHTML = 
+      '<div class="card pad fadeIn">' +
+        '<div style="display:flex; justify-content:space-between; gap:12px; align-items:flex-start; flex-wrap:wrap;">' +
+          '<div style="min-width:0">' +
+            '<div style="display:flex; gap:10px; flex-wrap:wrap;">' +
+              '<span class="pill ' + toneClass(res.level.tone) + '">' + escapeHtml(res.level.label) + '</span>' +
+              '<span class="pill">' + qs.length + ' questions</span>' +
+              '<span class="pill">Généré le ' + escapeHtml(gen) + '</span>' +
+            '</div>' +
+            '<div style="margin-top: 12px;" class="h2">Résultat — ' + escapeHtml(name) + '</div>' +
+            '<div class="p" style="margin-top:8px; font-size:13px">Score indicatif basé sur Oui/Non/NSP. Priorisez les points Non et NSP.</div>' +
+          '</div>' +
+
+          '<div class="kpi" style="min-width: 240px;">' +
+            '<div class="small">Score global</div>' +
+            '<div style="margin-top:6px; font-size: 34px; font-weight: 850;">' + Math.round(res.overall) + '<span style="color:rgba(255,255,255,.55)">/100</span></div>' +
+            '<div style="margin-top:12px" class="bar"><div style="width:' + clamp(res.overall,0,100) + '%"></div></div>' +
+          '</div>' +
+        '</div>' +
+
+        '<div class="hr"></div>' +
+
+        '<div class="levels">' +
+          '<div class="item">' +
+            '<div style="display:flex; justify-content:space-between; gap:10px; align-items:flex-start;">' +
+              '<div style="min-width:0">' +
+                '<div class="t">Maturité insuffisante</div>' +
+                '<div class="s">Priorité : socle minimum</div>' +
+              '</div>' +
+              '<span class="pill bad">0–44</span>' +
+            '</div>' +
+            '<div class="d">MFA + sauvegardes immuables + patching + EDR + plan incident.</div>' +
+          '</div>' +
+
+          '<div class="item">' +
+            '<div style="display:flex; justify-content:space-between; gap:10px; align-items:flex-start;">' +
+              '<div style="min-width:0">' +
+                '<div class="t">Maturité moyenne</div>' +
+                '<div class="s">Renforcer + vérifier</div>' +
+              '</div>' +
+              '<span class="pill warn">45–74</span>' +
+            '</div>' +
+            '<div class="d">Tester les restaurations, sécuriser admins, alertes, partage cloud.</div>' +
+          '</div>' +
+
+          '<div class="item">' +
+            '<div style="display:flex; justify-content:space-between; gap:10px; align-items:flex-start;">' +
+              '<div style="min-width:0">' +
+                '<div class="t">Bonne maturité</div>' +
+                '<div class="s">Amélioration continue</div>' +
+              '</div>' +
+              '<span class="pill good">75–100</span>' +
+            '</div>' +
+            '<div class="d">Maintenir le niveau (revues, exercices) et traiter les points résiduels.</div>' +
+          '</div>' +
+        '</div>' +
+
+        '<div class="hr"></div>' +
+
+        '<div class="row2">' +
+          '<div class="item">' +
+            '<div class="t">Recommandations prioritaires</div>' +
+            '<div class="s">Top 6 basé sur vos réponses (Non/NSP)</div>' +
+            '<div style="margin-top:12px; display:grid; gap:10px;">' +
+              (res.recos.length ? res.recos.map(r => {
+                const badge = r.value === 'no' ? 'bad' : 'warn';
+                const valLabel = r.value === 'no' ? 'Non' : 'NSP';
+                return (
+                  '<div class="item" style="background: rgba(255,255,255,.03);">' +
+                    '<div style="display:flex; justify-content:space-between; gap:10px; align-items:flex-start;">' +
+                      '<div style="min-width:0">' +
+                        '<div class="t">' + escapeHtml(r.title) + '</div>' +
+                        '<div class="s">Réponse : ' + valLabel + '</div>' +
+                      '</div>' +
+                      '<span class="pill ' + badge + '">' + valLabel + '</span>' +
+                    '</div>' +
+                    '<div class="d">' + escapeHtml(r.reco || '') + '</div>' +
+                    (r.comment ? '<div class="small" style="margin-top:10px; color:rgba(255,255,255,.62)">Commentaire: ' + escapeHtml(r.comment) + '</div>' : '') +
+                  '</div>'
+                );
+              }).join('') : '<div class="small">Aucun point à traiter (selon les réponses fournies).</div>') +
+            '</div>' +
+          '</div>' +
+
+          '<div class="item">' +
+            '<div class="t">Récapitulatif (Non/NSP)</div>' +
+            '<div class="s">Liste des points à corriger ou clarifier</div>' +
+            '<div style="margin-top:12px; display:grid; gap:10px;">' +
+              (res.misses.length ? res.misses.map(m => {
+                const badge = m.value === 'no' ? 'bad' : 'warn';
+                const valLabel = m.value === 'no' ? 'Non' : 'NSP';
+                return (
+                  '<div class="item" style="background: rgba(255,255,255,.03);">' +
+                    '<div style="display:flex; justify-content:space-between; gap:10px; align-items:flex-start;">' +
+                      '<div style="min-width:0">' +
+                        '<div class="t">' + escapeHtml(m.title) + '</div>' +
+                        '<div class="s">' + escapeHtml(m.prompt) + '</div>' +
+                      '</div>' +
+                      '<span class="pill ' + badge + '">' + valLabel + '</span>' +
+                    '</div>' +
+                    (m.comment ? '<div class="small" style="margin-top:10px; color:rgba(255,255,255,.62)">Commentaire: ' + escapeHtml(m.comment) + '</div>' : '') +
+                  '</div>'
+                );
+              }).join('') : '<div class="small">Aucun point Non/NSP.</div>') +
+            '</div>' +
+          '</div>' +
+        '</div>' +
+
+        '<div style="margin-top: 16px; display:flex; gap:10px; flex-wrap:wrap;">' +
+          '<button class="btn ghost" id="btnBack" type="button">← Revenir aux questions</button>' +
+          '<button class="btn" id="btnExportLocal" type="button">Export JSON</button>' +
+        '</div>' +
+
+        '<div class="note" style="margin-top: 14px;">💡 Prochaine étape : convertir les Non en actions planifiées (responsable + date + preuve). Les NSP doivent être levés rapidement.</div>' +
+      '</div>';
+
+    $('#btnBack').onclick = () => { state.step = 2; render(); };
+    $('#btnExportLocal').onclick = () => exportReport(qs, res);
+  }
+
+  function exportReport(qs, res){
+    const payload = {
+      name: "Kitsune Autodiag",
+      version: "simple-v1",
+      generatedAt: nowISO(),
+      generatedAtHuman: formatDateTimeFR(new Date()),
+      startedAt: state.startedAt,
+      context: state.ctx,
+      questionCount: qs.length,
+      score: {
+        overall: res.overall,
+        level: res.level,
+      },
+      answers: qs.map(q => ({
+        id: q.id,
+        title: q.title,
+        prompt: q.prompt,
+        answer: state.answers[q.id] || null,
+        comment: (state.comments[q.id] || '').trim() || null,
+      })),
+      misses: res.misses,
+      recommendations: res.recos,
+    };
+
+    const safeName = sanitizeName(state.ctx.orgName || 'Organisation');
+    downloadJSON('Kitsune_Autodiag_' + (safeName || 'Organisation') + '.json', payload);
+  }
+
+  btnReset.addEventListener('click', () => {
+    localStorage.removeItem(STORAGE_KEY);
+    state.step = 0;
+    state.idx = 0;
+    state.startedAt = null;
+    state.ctx = { orgName: "", orgSize: "10-49", remote: "yes", cloud: "med", outsourcing: "yes" };
+    state.answers = {};
+    state.comments = {};
+    render();
+  });
+
+  btnExport.addEventListener('click', () => {
+    const qs = visibleQuestions();
+    const res = computeScore(qs);
+    exportReport(qs, res);
+  });
+
+  loadState();
+  render();
+})();
+</script>
+</body>
+</html>
