@@ -7,7 +7,9 @@
   <link rel="stylesheet" href="./app.css" />
   <script defer src="./app.js"></script>
 </head>
-<body class="theme-tvos">
+
+<!-- is-locked = le contenu est verrouillé tant que pas connecté -->
+<body class="theme-tvos is-locked">
   <div class="page">
     <div class="brand">
       <a href="./index.html" aria-label="Retour accueil" style="display:flex;align-items:center;gap:10px;text-decoration:none;">
@@ -18,9 +20,10 @@
     <div class="clock" aria-label="Horloge">
       <div class="time" data-clock-time>--:--:--</div>
       <div class="date" data-clock-date>--</div>
+      <button class="logout" type="button" data-logout aria-label="Se déconnecter">Déconnexion</button>
     </div>
 
-    <main class="center">
+    <main class="center" aria-label="SOC">
       <div class="stack">
         <a class="pill" href="https://n8n.example.local" target="_blank" rel="noreferrer">n8n</a>
         <a class="pill" href="https://shuffle.example.local" target="_blank" rel="noreferrer">Shuffle</a>
@@ -31,6 +34,28 @@
     <footer class="footer">
       <div class="text">Kitsune SOC by KITSUNE Security - 2026 - KITSUNE TEAM</div>
     </footer>
+
+    <!-- GATE LOGIN (visible tant que pas authentifié) -->
+    <div class="auth-overlay" data-auth-overlay role="dialog" aria-modal="true" aria-labelledby="authTitle">
+      <div class="auth-card" role="document">
+        <img class="auth-logo" src="./assets/logo.png" alt="" aria-hidden="true" />
+        <h1 class="auth-title" id="authTitle">Accès SOC</h1>
+        <p class="auth-sub">Identifiants requis</p>
+
+        <form class="auth-form" data-auth-form>
+          <label class="auth-label" for="authUser">Identifiant</label>
+          <input class="auth-input" id="authUser" name="username" autocomplete="username" inputmode="text" required />
+
+          <label class="auth-label" for="authPass">Mot de passe</label>
+          <input class="auth-input" id="authPass" name="password" type="password" autocomplete="current-password" required />
+
+          <button class="auth-btn" type="submit">Se connecter</button>
+          <div class="auth-error" data-auth-error aria-live="polite"></div>
+        </form>
+
+        <div class="auth-hint">Par défaut : <strong>demo</strong> / <strong>demo1234</strong></div>
+      </div>
+    </div>
   </div>
 </body>
 </html>
