@@ -5,7 +5,9 @@
 Logo generated with Nano Banana 3
 
 
-Site Web SOC : https://kitsune-security.github.io/Kitsune-SOC/kitsune-soc-web/index.html
+Site Web : https://kitsune-security.github.io/Kitsune-SOC/
+
+Site Web MySOC : https://kitsune-security.github.io/Kitsune-SOC/soc-portail/
 
 Site Web Audicéa : https://kitsune-security.github.io/Kitsune-SOC/PoC-entreprise/audicea/website/index.html
 
