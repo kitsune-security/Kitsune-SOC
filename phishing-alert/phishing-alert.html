@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kitsune • Alerte Phishing</title>
+
+  <style>
+    :root{
+      --bg: #070814;
+      --bg2:#0b0f2b;
+      --text:#e9ecff;
+      --muted:#b8bde6;
+      --danger:#ff3b3b;
+      --danger2:#ff6b6b;
+      --neon:#7c4dff;
+      --neon2:#00d4ff;
+      --card: rgba(255,255,255,0.06);
+      --border: rgba(255,255,255,0.14);
+      --shadow: 0 20px 60px rgba(0,0,0,0.55);
+    }
+
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      color:var(--text);
+      background:
+        radial-gradient(1000px 600px at 20% 15%, rgba(124,77,255,0.35), transparent 60%),
+        radial-gradient(900px 700px at 85% 70%, rgba(0,212,255,0.25), transparent 60%),
+        linear-gradient(180deg, var(--bg), var(--bg2));
+      overflow-x:hidden;
+    }
+
+    /* grain + scanlines */
+    body::before{
+      content:"";
+      position:fixed; inset:0;
+      background:
+        repeating-linear-gradient(
+          to bottom,
+          rgba(255,255,255,0.04) 0px,
+          rgba(255,255,255,0.04) 1px,
+          rgba(0,0,0,0) 3px,
+          rgba(0,0,0,0) 6px
+        );
+      mix-blend-mode: overlay;
+      opacity: 0.35;
+      pointer-events:none;
+    }
+    body::after{
+      content:"";
+      position:fixed; inset:-40%;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='.25'/%3E%3C/svg%3E");
+      opacity:.10;
+      pointer-events:none;
+      transform: rotate(8deg);
+    }
+
+    .wrap{
+      min-height:100%;
+      display:grid;
+      place-items:center;
+      padding:32px 16px;
+    }
+
+    .card{
+      width:min(860px, 100%);
+      background: var(--card);
+      border:1px solid var(--border);
+      border-radius:18px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+      position:relative;
+      overflow:hidden;
+    }
+
+    .card::before{
+      content:"";
+      position:absolute; inset:-2px;
+      background: linear-gradient(90deg, rgba(124,77,255,.35), rgba(0,212,255,.25), rgba(255,59,59,.25));
+      filter: blur(18px);
+      opacity:.35;
+      pointer-events:none;
+    }
+
+    .inner{
+      position:relative;
+      padding:28px;
+    }
+
+    header{
+      display:flex;
+      align-items:center;
+      gap:14px;
+      margin-bottom:18px;
+    }
+
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      padding:10px 14px;
+      border-radius:999px;
+      background: rgba(255,59,59,0.12);
+      border: 1px solid rgba(255,59,59,0.35);
+      color: #ffd7d7;
+      letter-spacing: .2px;
+      font-weight: 650;
+      text-transform: uppercase;
+      font-size: 12px;
+    }
+
+    .dot{
+      width:10px; height:10px;
+      border-radius:50%;
+      background: var(--danger);
+      box-shadow: 0 0 14px rgba(255,59,59,.75);
+      position:relative;
+    }
+    .dot::after{
+      content:"";
+      position:absolute; inset:-6px;
+      border-radius:50%;
+      border:1px solid rgba(255,59,59,.35);
+      animation: pulse 1.6s ease-in-out infinite;
+    }
+    @keyframes pulse{
+      0%{ transform:scale(.7); opacity:.2; }
+      60%{ transform:scale(1.2); opacity:.55; }
+      100%{ transform:scale(1.4); opacity:0; }
+    }
+
+    h1{
+      margin:0;
+      font-size: clamp(22px, 2.6vw, 34px);
+      line-height:1.15;
+      letter-spacing: .2px;
+    }
+
+    .glitch{
+      position:relative;
+      display:inline-block;
+      text-shadow: 0 0 24px rgba(124,77,255,.25);
+    }
+    .glitch::before,
+    .glitch::after{
+      content:attr(data-text);
+      position:absolute;
+      left:0; top:0;
+      width:100%;
+      overflow:hidden;
+      opacity:.55;
+      clip-path: inset(0 0 0 0);
+      pointer-events:none;
+    }
+    .glitch::before{
+      transform: translate(1px, 0);
+      color: rgba(0,212,255,.85);
+      animation: glitch1 2.8s infinite linear alternate-reverse;
+    }
+    .glitch::after{
+      transform: translate(-1px, 0);
+      color: rgba(255,59,59,.75);
+      animation: glitch2 2.4s infinite linear alternate-reverse;
+    }
+    @keyframes glitch1{
+      0%{ clip-path: inset(0 0 85% 0); }
+      20%{ clip-path: inset(10% 0 60% 0); }
+      40%{ clip-path: inset(55% 0 30% 0); }
+      60%{ clip-path: inset(25% 0 55% 0); }
+      80%{ clip-path: inset(75% 0 10% 0); }
+      100%{ clip-path: inset(0 0 85% 0); }
+    }
+    @keyframes glitch2{
+      0%{ clip-path: inset(80% 0 0 0); }
+      25%{ clip-path: inset(50% 0 25% 0); }
+      50%{ clip-path: inset(15% 0 65% 0); }
+      75%{ clip-path: inset(65% 0 15% 0); }
+      100%{ clip-path: inset(80% 0 0 0); }
+    }
+
+    .alert{
+      margin-top:18px;
+      padding:18px 18px;
+      border-radius:14px;
+      background: linear-gradient(180deg, rgba(255,59,59,0.16), rgba(255,59,59,0.08));
+      border: 1px solid rgba(255,59,59,0.35);
+    }
+
+    .alert p{
+      margin:0;
+      font-size: clamp(16px, 2.1vw, 20px);
+      line-height:1.45;
+      color: #ffe8e8;
+      font-weight: 650;
+    }
+
+    .sub{
+      margin-top:14px;
+      color: var(--muted);
+      line-height:1.6;
+      font-size: 14.5px;
+      max-width: 70ch;
+    }
+
+    .tips{
+      margin-top:18px;
+      padding:0;
+      list-style:none;
+      display:grid;
+      gap:10px;
+    }
+    .tips li{
+      padding:12px 14px;
+      border-radius:12px;
+      background: rgba(255,255,255,0.05);
+      border:1px solid rgba(255,255,255,0.10);
+      color: var(--text);
+      line-height:1.45;
+      font-size: 14.5px;
+    }
+
+    .actions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:18px;
+    }
+    .btn{
+      appearance:none;
+      border:1px solid rgba(255,255,255,0.16);
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+      padding:10px 14px;
+      border-radius:12px;
+      cursor:pointer;
+      font-weight:650;
+      transition: transform .08s ease, background .2s ease, border-color .2s ease;
+    }
+    .btn:hover{
+      background: rgba(255,255,255,0.10);
+      border-color: rgba(255,255,255,0.26);
+      transform: translateY(-1px);
+    }
+    .btn.danger{
+      background: rgba(255,59,59,0.15);
+      border-color: rgba(255,59,59,0.38);
+    }
+    .btn.danger:hover{
+      background: rgba(255,59,59,0.22);
+      border-color: rgba(255,59,59,0.55);
+    }
+
+    footer{
+      margin-top:18px;
+      padding-top:14px;
+      border-top:1px dashed rgba(255,255,255,0.18);
+      color: rgba(233,236,255,0.70);
+      font-size: 12.5px;
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+
+    .mono{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+  </style>
+</head>
+
+<body>
+  <main class="wrap">
+    <section class="card" role="alert" aria-live="assertive">
+      <div class="inner">
+        <header>
+          <span class="badge"><span class="dot" aria-hidden="true"></span> Alerte sécurité</span>
+        </header>
+
+        <h1>
+          <span class="glitch" data-text="Kitsune Security Notice">Kitsune Security Notice</span>
+        </h1>
+
+        <div class="alert">
+          <p>
+            Attention, si tu es sur cette page c'est que tu as échoué au test de phishing, fais attention&nbsp;!
+          </p>
+        </div>
+
+        <p class="sub">
+          Ce message indique que tu as cliqué sur un lien ou interagi avec un contenu qui imitait une communication légitime.
+          L’objectif est d’apprendre à repérer les signaux faibles avant de donner des informations, télécharger un fichier,
+          ou valider une action.
+        </p>
+
+        <ul class="tips">
+          <li>Vérifie l’expéditeur et le domaine (ex : <span class="mono">nom@entreprise.com</span> vs <span class="mono">nom@entreprlse.com</span>).</li>
+          <li>Méfie-toi des urgences (“tout de suite”, “compte bloqué”, “dernière chance”) : c’est un levier classique.</li>
+          <li>Survole les liens (ou affiche l’URL) avant de cliquer : l’adresse réelle est souvent différente.</li>
+          <li>Ne saisis jamais d’identifiants via un lien reçu : passe plutôt par ton favori / portail habituel.</li>
+        </ul>
+
+        <div class="actions">
+          <button class="btn danger" type="button" onclick="window.history.length > 1 ? history.back() : location.href='/'">
+            Revenir en arrière
+          </button>
+          <button class="btn" type="button" onclick="alert('Astuce : si tu as un doute, transfère l’email au service IT / référent sécurité.');">
+            Que faire maintenant ?
+          </button>
+        </div>
+
+        <footer>
+          <span>Réf: <span class="mono">KITSUNE-PHISH-ALERT</span></span>
+          <span class="mono" id="stamp"></span>
+        </footer>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // Affiche une date/heure locale (simple, utile en audit)
+    const d = new Date();
+    const pad = (n) => String(n).padStart(2, "0");
+    document.getElementById("stamp").textContent =
+      `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  </script>
+</body>
+</html>

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 500px;
+            background-color: #ffffff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            margin: 0 auto;
+            padding: 40px;
+        }
+        .logo {
+            width: 75px;
+            margin-bottom: 20px;
+        }
+        h1 {
+            font-size: 20px;
+            color: #202124;
+            margin-bottom: 24px;
+            font-weight: 500;
+        }
+        .info-box {
+            border: 1px solid #dadce0;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 25px;
+        }
+        .info-item {
+            display: flex;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        .label {
+            color: #70757a;
+            width: 100px;
+            flex-shrink: 0;
+        }
+        .value {
+            color: #202124;
+            font-weight: 500;
+        }
+        .message {
+            font-size: 14px;
+            color: #3c4043;
+            line-height: 1.5;
+            margin-bottom: 25px;
+        }
+        .button {
+            display: inline-block;
+            background-color: #1a73e8;
+            color: #ffffff;
+            text-decoration: none;
+            padding: 10px 24px;
+            border-radius: 4px;
+            font-weight: 500;
+            font-size: 14px;
+            text-align: center;
+        }
+        .footer {
+            margin-top: 30px;
+            font-size: 12px;
+            color: #70757a;
+            text-align: center;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="https://www.gstatic.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png" alt="Google" class="logo">
+        
+        <h1>Nouvelle alerte de sécurité</h1>
+        
+        <p class="message">
+            Votre compte Google <strong>john.doe@gmail.com</strong> vient d'être utilisé pour une nouvelle connexion sur un appareil Linux.
+        </p>
+
+        <div class="info-box">
+            <div class="info-item">
+                <span class="label">Appareil</span>
+                <span class="value">Linux (Chrome)</span>
+            </div>
+            <div class="info-item">
+                <span class="label">Lieu</span>
+                <span class="value">Mumbai, Maharashtra, Inde</span>
+            </div>
+            <div class="info-item">
+                <span class="label">Heure</span>
+                <span class="value">5 fév. 2026 13:42 (UTC+5)</span>
+            </div>
+            <div class="info-item">
+                <span class="label">Adresse IP</span>
+                <span class="value">103.21.159.20</span>
+            </div>
+        </div>
+
+        <p class="message">
+            Si c'était vous, vous pouvez ignorer cet e-mail. Si vous ne reconnaissez pas cette activité, cliquez sur le bouton ci-dessous pour sécuriser votre compte.
+        </p>
+
+        <a href="https://example.com" class="button">Consulter l'activité</a>
+
+        <div class="footer">
+            Vous recevez cet e-mail pour vous informer des modifications importantes apportées à votre compte et à ses services Google.<br>
+            © 2026 Google LLC, 1600 Amphitheatre Parkway, Mountain View, CA 94043, USA
+        </div>
+    </div>
+</body>
+</html>
