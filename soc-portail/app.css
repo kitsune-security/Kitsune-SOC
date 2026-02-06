@@ -53,7 +53,7 @@ body.theme-tvos{
   content: "";
   position: absolute;
   inset: 0;
-  background-image: url("./assets/logo.png");
+  background-image: url("./logo.png");
   background-repeat: no-repeat;
   background-position: 50% 52%;
   background-size: 560px auto;
@@ -372,5 +372,31 @@ body.is-locked .clock{
   border-radius: 14px;
   border: 1px solid rgba(255,255,255,0.18);
   background: rgba(255,255,255,0.10);
-  color:
+  color: rgba(255,255,255,0.88);
+  font-weight: 750;
+  font-size: 13px;
+  cursor: pointer;
+  box-shadow: 0 10px 26px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.16);
+  transition:
+    transform 120ms cubic-bezier(.2,.8,.2,1),
+    box-shadow 120ms cubic-bezier(.2,.8,.2,1),
+    border-color 120ms cubic-bezier(.2,.8,.2,1);
+}
 
+@media (hover: hover){
+  .logout:hover{
+    transform: scale(1.02);
+    border-color: rgba(255,255,255,0.26);
+    box-shadow: 0 14px 32px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.18);
+  }
+}
+
+.logout:focus,
+.logout:focus-visible{
+  outline: none;
+  border-color: rgba(255,255,255,0.34);
+  box-shadow:
+    0 16px 36px rgba(0,0,0,0.60),
+    0 0 0 2px rgba(255,255,255,0.55),
+    0 0 18px rgba(120,180,255,0.35);
+}
