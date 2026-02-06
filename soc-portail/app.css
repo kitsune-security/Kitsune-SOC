@@ -53,7 +53,7 @@ body.theme-tvos{
   content: "";
   position: absolute;
   inset: 0;
-  background-image: url("./logo.png");
+  background-image: url("./assets/logo.png");
   background-repeat: no-repeat;
   background-position: 50% 52%;
   background-size: 560px auto;
