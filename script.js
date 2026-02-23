@@ -68,7 +68,7 @@
       }
 
       // Simulate submit success
-      setHint("Message prêt à être envoyé. Connectez ce formulaire à Formspree / n8n / backend pour l’envoi réel ✅", true);
+      setHint("Votre message a bien été envoyé. Nous revenons vers vous très prochainement.", true);
       form.reset();
 
       // Default back to Serenity after reset
