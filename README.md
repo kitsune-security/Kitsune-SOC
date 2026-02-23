@@ -11,3 +11,9 @@ Site Web MySOC : https://kitsune-security.github.io/Kitsune-SOC/soc-portail/
 
 Site Web Audicéa : https://kitsune-security.github.io/Kitsune-SOC/PoC-entreprise/audicea/website/index.html
 
+Kitsune autodiag : https://kitsune-security.github.io/Kitsune-SOC/kitsune-autodiag
+
+Kitsune Anti-Phishing : https://kitsune-security.github.io/Kitsune-SOC/phishing-alert/mail.html
+
+
+
